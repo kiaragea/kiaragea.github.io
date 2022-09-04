@@ -39,3 +39,9 @@ let getJSONData = function(url){
         return result;
     });
 }
+
+const nombre = document.getElementById("nombreUs");
+var getNombre = localStorage.getItem("email")
+console.log(getNombre)
+nombre.innerHTML += `<a class="nav-link" href"">${getNombre}</a>` ;
+
