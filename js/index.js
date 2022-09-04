@@ -13,5 +13,5 @@ boton.addEventListener(`click`, (e) => {
     } else {
         alert ("Todos los campos son obligatorios");
     }
-    console.log(data);
+    localStorage.setItem("email", email.value);
 })

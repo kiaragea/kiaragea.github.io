@@ -1,5 +1,3 @@
-const URL = `https://japceibal.github.io/emercado-api/cats_products/101.json`
-
 function getHtml(producto) {
     return `
     <div class="row p-0 overflow-hiden border border-1 border-dark mb-2" data-id="${producto.id}">
@@ -23,12 +21,248 @@ function getHtml(producto) {
     `
 }
 
-document.addEventListener("DOMContentLoaded", async function(){
-    const listado = document.querySelector(".product-list");
+let categoria = localStorage.getItem ('catID')
+let listaProductos = [];
+const listado= document.querySelector('.product-list');
 
-    const listaAutos = await getJSONData(URL);
+document.addEventListener('DOMContentLoaded', async function(){
+  var listado= await getJSONData (PRODUCTS_URL+ categoria + EXT_TYPE);
+  listaProductos = listado
+  showProductsList (listaProductos.data.products)
+});
 
-    listaAutos.data.products.forEach(auto => {
-      listado.innerHTML += getHtml(auto)
+const ORDER_ASC_BY_COST = "Precio asc."
+const ORDER_DESC_BY_COST = "Precio desc."
+const ORDER_BY_PROD_SOLDCOUNT = "Relevancia";
+let currentSortCriteria = undefined;
+let minCost = undefined;
+let maxCost = undefined;
+
+function sortProducts(criteria, array){
+    let result = [];
+    if (criteria === ORDER_ASC_BY_COST)
+    {
+        result = array.sort(function(a, b) {
+            if ( a.cost < b.cost){ return -1; }
+            if ( a.cost > b.cost ){ return 1; }
+            return 0;
+        });
+    }else if (criteria === ORDER_DESC_BY_COST){
+        result = array.sort(function(a, b) {
+            if ( a.cost > b.cost ){ return -1; }
+            if ( a.cost < b.cost ){ return 1; }
+            return 0;
+        });
+    }else if (criteria === ORDER_BY_PROD_SOLDCOUNT){
+        result = array.sort(function(a, b) {
+            let asoldCount = parseInt(a.soldCount);
+            let bsoldCount = parseInt(b.soldCount);
+
+            if ( asoldCount > bsoldCount ){ return -1; }
+            if ( asoldCount < bsoldCount ){ return 1; }
+            return 0;
+        });
+    }
+
+    return result;
+}
+
+function showProductsList(array){
+
+    let htmlContentToAppend = "";
+    for(let i = 0; i < array.length; i++){
+        let product = array[i];
+
+        if (((minCost == undefined) || (minCost != undefined && parseInt(product.cost) >= minCost)) &&
+            ((maxCost == undefined) || (maxCost != undefined && parseInt(product.cost) <= maxCost))){
+
+            htmlContentToAppend += getHtml(product)
+        }
+
+        listado.innerHTML = htmlContentToAppend;
+    }
+}
+
+function sortAndShowProducts(sortCriteria){
+    currentSortCriteria = sortCriteria;
+ 
+    array = sortProducts(currentSortCriteria, listaProductos.data.products);
+
+    showProductsList(array);
+}
+
+    document.getElementById("sortAsc").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_ASC_BY_COST);
     });
-})
+
+    document.getElementById("sortDesc").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_DESC_BY_COST);
+    });
+
+    document.getElementById("sortBySoldCount").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_BY_PROD_SOLDCOUNT);
+    });
+
+    document.getElementById("clearRangeFilter").addEventListener("click", function(){
+        document.getElementById("rangeFilterCostMin").value = "";
+        document.getElementById("rangeFilterCostMax").value = "";
+
+        minCost = undefined;
+        maxCost = undefined;
+
+        showProductsList(listaProductos.data.products);
+    });
+
+    document.getElementById("rangeFilterCost").addEventListener("click", function(){
+        minCost = document.getElementById("rangeFilterCostMin").value;
+        maxCost = document.getElementById("rangeFilterCostMax").value;
+
+        if ((minCost != undefined) && (minCost != "") && (parseInt(minCost)) >= 0){
+            minCost = parseInt(minCost);
+        }
+        else{
+            minCost = undefined;
+        }
+
+        if ((maxCost != undefined) && (maxCost != "") && (parseInt(maxCost)) >= 0){
+            maxCost = parseInt(maxCost);
+        }
+        else{
+            maxCost = undefined;
+        }
+
+        showProductsList(listaProductos.data.products);
+    });
+
+/*let currentSortCriteria = undefined;
+let minCost = undefined;
+let maxCost = undefined;
+
+function sortProducts(criteria, array){
+  let result = [];
+  if (criteria === ORDER_ASC_BY_COST)
+  {
+      result = array.sort(function(a, b) {
+          if ( a.cost < b.cost ){ return -1; }
+          if ( a.cost > b.cost ){ return 1; }
+          return 0;
+      });
+  }else if (criteria === ORDER_DESC_BY_COST){
+      result = array.sort(function(a, b) {
+          if ( a.cost > b.cost ){ return -1; }
+          if ( a.cost < b.cost ){ return 1; }
+          return 0;
+      });
+  }else if (criteria === ORDER_BY_PROD_SOLDCOUNT){
+      result = array.sort(function(a, b) {
+          let aSoldCount = parseInt(a.productSoldCount);
+          let bSoldCount = parseInt(b.productSoldCount);
+
+          if ( aSoldCount > bSoldCount ){ return -1; }
+          if ( aSoldCount < bSoldCount ){ return 1; }
+          return 0;
+      });
+  }
+
+  return result;
+}
+
+
+function showProductsList(){
+
+  let htmlContentToAppend = "";
+  for(let i = 0; i < arrayProductos.length; i++){
+      let product = arrayProductos[i];
+
+      if (((minCost == undefined) || (minCost != undefined && parseInt(product.productCost) >= minCost)) &&
+          ((maxCost == undefined) || (maxCost != undefined && parseInt(product.productCost) <= maxCost))){
+
+          htmlContentToAppend += getHtml(product)
+      }
+
+      document.getElementById("product-list-container").innerHTML = htmlContentToAppend;
+  }
+}
+
+function sortAndShowProducts(sortCriteria, productsArray){
+  currentSortCriteria = sortCriteria;
+
+  if(productsArray != undefined){
+      arrayProductos = productsArray;
+  }
+
+  arrayProductos = sortProducts(currentSortCriteria, arrayProductos);
+
+  showProductsList()
+}
+
+document.addEventListener("DOMContentLoaded", async function(){
+  const categoria = localStorage.getItem(`catID`);
+  const listado = document.querySelector(".product-list");
+  const PRODUCTS_URL = `https://japceibal.github.io/emercado-api/cats_products/${categoria}.json`;
+  const listaProductos = await getJSONData(PRODUCTS_URL);
+    
+  arrayProductos = listaProductos.data.products;
+  
+  showProductsList();
+
+  const ORDER_ASC_BY_COST = "Precio asc."
+  const ORDER_DESC_BY_COST = "Precio desc."
+  const ORDER_BY_PROD_SOLDCOUNT = "Relevancia";
+  
+document.addEventListener("DOMContentLoaded", function(e){
+    getJSONData(PRODUCTS_URL).then(function(resultObj){
+        if (resultObj.status === "ok"){
+            arrayProductos = resultObj.data
+            showProductsList(arrayProductos.data.products)
+        }
+    });
+
+    document.getElementById("sortAsc").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_ASC_BY_COST);
+    });
+
+    document.getElementById("sortDesc").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_DESC_BY_COST);
+    });
+
+    document.getElementById("sortByCost").addEventListener("click", function(){
+        sortAndShowProducts(ORDER_BY_PROD_SOLDCOUNT);
+    });
+
+    document.getElementById("clearRangeFilter").addEventListener("click", function(){
+        document.getElementById("rangeFilterCostMin").value = "";
+        document.getElementById("rangeFilterCostMax").value = "";
+
+        minCost = undefined;
+        maxCost = undefined;
+
+        showProductsList(arrayProductos.data.products);
+    });
+
+    document.getElementById("rangeFilterCost").addEventListener("click", function(){
+        minCost = document.getElementById("rangeFilterCostminCostMin").value;
+        maxCostminCost = document.getElementById("rangeFilterCostminCostMax").value;
+
+        if ((minCost != undefined) && (minCost != "") && (parseInt(minCost)) >= 0){
+            minCost = parseInt(minCost);
+        }
+        else{
+            minCost = undefined;
+        }
+
+        if ((maxCost != undefined) && (maxCost != "") && (parseInt(maxCost)) >= 0){
+            maxCost = parseInt(maxCost);
+        }
+        else{
+            maxCost = undefined;
+        }
+
+        showProductsList(arrayProductos.data.products);
+    });
+});
+})*/
+
+
+
+
