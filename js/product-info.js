@@ -1,11 +1,11 @@
 let producto = localStorage.getItem('prodID')
 let infoProductos = "";
 const lista= document.getElementById('info');
+const relacionados = document.getElementById(`rel`)
 
 document.addEventListener('DOMContentLoaded', async function(){
   var listado= await getJSONData(PRODUCT_INFO_URL + producto + EXT_TYPE);
   infoProductos = listado
-  console.log(listado)
   const name = listado.data.name;
   const currency = listado.data.currency;
   const cost = listado.data.cost;
@@ -28,30 +28,49 @@ document.addEventListener('DOMContentLoaded', async function(){
     <p><b>Imágenes ilustrativas:</b></p>
   `
 
-  for (let i = 0; i < 4; i++) {
-    const images = listado.data.images[i];
-    lista.innerHTML += `
-    <div class="h-100 mb-2">
-        <img src="${images}" >
-        </div>
-        `}
+    lista.innerHTML += `<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="${listado.data.images[0]}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="${listado.data.images[1]}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="${listado.data.images[2]}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="${listado.data.images[3]}" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+        `
 
-        lista.innerHTML += `<hr><h4>Comentarios:</h4>`
-        var calification= await getJSONData(PRODUCT_INFO_COMMENTS_URL + producto + EXT_TYPE);
-        infoProductos = calification
-        console.log(calification)
-    
-        for (let i = 0; i < 10; i++){
-            let user = calification.data[i].user;
-            let score = calification.data[i].score;
-            let description = calification.data[i].description;
-            lista.innerHTML += `
-            <p><b>${user}</b></p>
-            <p>${showStars(score)}</p>
-            <p>${description}</p>
-            <hr>
-            `
-        }
+    lista.innerHTML += `<hr><h4>Comentarios:</h4>`
+    var calification= await getJSONData(PRODUCT_INFO_COMMENTS_URL + producto + EXT_TYPE);
+    infoProductos = calification
+    console.log(calification)
+    for (let i = 0; i < calification.data.length; i++){
+        let user = calification.data[i].user;
+        let score = calification.data[i].score;
+        let description = calification.data[i].description;
+        lista.innerHTML += `<div>
+        <p><b>${user}</b></p>
+        <p>${showStars(score)}</p>
+        <p>${description}</p>
+        <hr>
+        </div>
+        `
+        
+    }
     
         function showStars(score){
             
@@ -105,8 +124,15 @@ document.addEventListener('DOMContentLoaded', async function(){
             }
         }
 
+        relacionados.innerHTML += ` <br>
+        <p><b>Productos relacionados:</b></p>`
+        for (let i = 0; i < 2; i++) {
+            const related = listado.data.relatedProducts[i];
+            relacionados.innerHTML += `<div onclick="setProdID(${related.id})">
+            <img src="${related.image}">
+            <p>${related.name}</p>
+            </div>
+            `
+        }   
+        
 });
-
-// document.addEventListener('DOMContentLoaded', async function(){
-    
-// })
