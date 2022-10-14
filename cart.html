@@ -37,8 +37,64 @@
   </nav>
   <main>
     <div class="container">
-      <div class="alert alert-danger text-center" role="alert">
-        <h4 class="alert-heading">Funcionalidad en desarrollo</h4>
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h1>Carrito de compras</h1>
+        </div>
+        <br>
+        <h4>Artículos a comprar</h4>
+        <br><br>
+        <table>
+          <thead>
+            <hr>
+          <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Costo</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+          </tr>
+          </thead>
+          
+          <tbody id="tableInfo"></tbody>
+        </table>
+      <div><br><hr>
+        <h4>Tipo de envío</h4>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+          <label class="form-check-label" for="flexRadioDefault1">
+            Premium 2 a 5 días (15%)
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Express 5 a 8 días (7%)
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Standard 12 a 15 días (5%)
+          </label>
+        </div>
+        <br>
+        <h4>Dirección de envío</h4>
+        <form class="row g-3">
+          <div class="col-md-5">
+            <label for="inputEmail4" class="form-label">Calle</label>
+            <input type="text" class="form-control" id="inputEmail4">
+          </div>
+          <div class="col-md-3">
+            <label for="inputPassword4" class="form-label">Número</label>
+            <input type="text" class="form-control" id="inputPassword4">
+          </div>
+          <div class="col-5">
+            <label for="inputAddress" class="form-label">Esquina</label>
+            <input type="text" class="form-control" id="inputAddress">
+          </div>
+          <hr>
+        </form>
       </div>
     </div>
   </main>
