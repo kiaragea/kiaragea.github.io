@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   sub.innerHTML = subtotal(info.data.articles[0].unitCost)
 
 
+  //* llamar a las funciones de costo según el radio clickeado
+  
   premium.addEventListener("click", function () {
 
     if (premium.checked) {
@@ -51,6 +53,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   })
 
 
+  //* desactivar un campo en el modal
+
   tarjeta.addEventListener("click", function () {
     numeroCuenta.disabled = true
     if (tarjeta.checked = true) {
@@ -70,6 +74,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   })
 });
+
+
+//* funciones para los costos
 
 function subtotal(cost) {
   const count = document.getElementById("count").value;
@@ -108,6 +115,8 @@ function costoTotal() {
 
 }
 
+
+//* funciones para validar
 
 (() => {
   'use strict'
